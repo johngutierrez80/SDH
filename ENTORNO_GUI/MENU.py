@@ -81,6 +81,9 @@ def ejecutar_UNIFICAR_BASES_DE_DATOS_GUI():
 def ejecutar_ADICIONALES_GUI():
     os.system(r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\ENTORNO_GUI\ADICIONALES_GUI.py")
 
+def ejecutar_LS():
+    os.system(r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\ENTORNO_GUI\LS.py")
+
 root = tk.Tk()
 root.title("Procesos Data Variable")  # Cambia el título de la ventana
 
@@ -134,7 +137,7 @@ apps_menu.add_command(label="INSERTAR LABELS", command=ejecutar_INSERTAR_LABELS_
 apps_menu.add_command(label="INSERTAR FULL", command=ejecutar_INSERT_FULL)
 
 
-# Crear submenú para los Reportes
+# Crear submenú para los Adicionales
 apps_menu = Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="ADICIONALES", menu=apps_menu, font=("Arial", 12))  # Ajustar el tamaño de la fuente del menú de Reportes
 
@@ -152,6 +155,7 @@ menu_bar.add_cascade(label="REPORTES", menu=apps_menu, font=("Arial", 12))  # Aj
 apps_menu.add_command(label="REPORTE PAGINAS", command=ejecutar_NUMERO_PAGINAS_GUI)
 apps_menu.add_command(label="REPORTE PAGINAS CARTAS", command=ejecutar_NUMERO_PAGINAS_CARTAS_GUI)
 apps_menu.add_command(label="FILTRAR BD", command=ejecutar_FILTRA_DB_GUI)
+apps_menu.add_command(label="LS CARTAS", command=ejecutar_LS)
 
 # Crear submenú para los Validaciones
 apps_menu = Menu(menu_bar, tearoff=0)

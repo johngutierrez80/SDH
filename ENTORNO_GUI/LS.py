@@ -10,6 +10,8 @@ def count_files_folders_and_sheets(directory, progress_var, progress_label_var):
     file_count = 0
     folder_count = 0
     total_sheets = 0
+    file_names = []
+    file_paths = []
 
     entries = os.listdir(directory)
     total_entries = len(entries)
@@ -18,6 +20,8 @@ def count_files_folders_and_sheets(directory, progress_var, progress_label_var):
         path = os.path.join(directory, entry)
         if os.path.isfile(path):
             file_count += 1
+            file_names.append(entry)
+            file_paths.append(path)
             if path.endswith('.pdf'):
                 try:
                     pdf = fitz.open(path)
@@ -34,18 +38,27 @@ def count_files_folders_and_sheets(directory, progress_var, progress_label_var):
         progress_label_var.set(f"Procesando: {i + 1}/{total_entries}")
         root.update_idletasks()
 
-    return file_count, folder_count, total_sheets
+    return file_count, folder_count, total_sheets, file_names, file_paths
 
-def write_count_to_file(directory, output_file, progress_var, progress_label_var):
-    file_count, folder_count, total_sheets = count_files_folders_and_sheets(directory, progress_var, progress_label_var)
+def write_count_to_file(directory, output_file, progress_var, progress_label_var, include_filenames, include_filepaths, op_selected):
+    file_count, folder_count, total_sheets, file_names, file_paths = count_files_folders_and_sheets(directory, progress_var, progress_label_var)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     directory_name = os.path.basename(directory)
     with open(output_file, 'w') as f:
         f.write(f"LS - {directory_name}\n")
         f.write(f"Fecha de creación: {now}\n\n")
+        f.write(f'Orden OP: {op_selected}\n')
         f.write(f'Total number of folders = {folder_count}\n')
         f.write(f'Total number of files = {file_count}\n')
         f.write(f'Total number of sheets (pages in PDF files) = {total_sheets}\n')
+        if include_filenames:
+            f.write('\nFile names:\n')
+            for name in file_names:
+                f.write(f'{name}\n')
+        if include_filepaths:
+            f.write('\nFile paths:\n')
+            for path in file_paths:
+                f.write(f'{path}\n')
 
 def select_directory():
     directory = filedialog.askdirectory()
@@ -62,6 +75,9 @@ def select_output_file():
 def generate_report():
     directory = directory_entry.get()
     output_file = output_entry.get()
+    include_filenames = include_filenames_var.get()
+    include_filepaths = include_filepaths_var.get()
+    op_selected = op_var.get()
     
     if not directory or not os.path.exists(directory):
         messagebox.showerror("Error", "Por favor, selecciona un directorio válido.")
@@ -69,6 +85,10 @@ def generate_report():
     
     if not output_file:
         messagebox.showerror("Error", "Por favor, selecciona un archivo de salida válido.")
+        return
+    
+    if not op_selected:
+        messagebox.showerror("Error", "Por favor, selecciona una OP válida.")
         return
 
     progress_var.set(0)
@@ -85,7 +105,7 @@ def generate_report():
     
     root.update_idletasks()
     
-    write_count_to_file(directory, output_file, progress_var, progress_label_var)
+    write_count_to_file(directory, output_file, progress_var, progress_label_var, include_filenames, include_filepaths, op_selected)
     
     progress_label_var.set("¡Completado!")
     progress_bar['value'] = 100
@@ -149,6 +169,20 @@ output_entry = tk.Entry(root, width=50)
 output_entry.place(x=180, y=60)
 output_button = tk.Button(root, text="Buscar", command=select_output_file, font=("Arial", 10, "bold"))
 output_button.place(x=500, y=58)
+
+op_label = tk.Label(root, text="Orden OP:", bg="white", font=("Arial", 10, "bold"))
+op_label.place(x=20, y=100)
+op_var = tk.StringVar()
+op_combobox = ttk.Combobox(root, textvariable=op_var, values=["307137", "307138"], font=("Arial", 10, "bold"))
+op_combobox.place(x=180, y=100)
+
+include_filenames_var = tk.BooleanVar()
+include_filenames_checkbutton = tk.Checkbutton(root, text="Nombres de archivos", variable=include_filenames_var, bg="white", font=("Arial", 10, "bold"))
+include_filenames_checkbutton.place(x=20, y=140)
+
+include_filepaths_var = tk.BooleanVar()
+include_filepaths_checkbutton = tk.Checkbutton(root, text="Paths de archivos", variable=include_filepaths_var, bg="white", font=("Arial", 10, "bold"))
+include_filepaths_checkbutton.place(x=200, y=140)
 
 generate_button = tk.Button(root, text="Run", command=generate_report, bg="green", font=("Arial", 10, "bold"), width=10, height=2)
 generate_button.place(x=200, y=250)
