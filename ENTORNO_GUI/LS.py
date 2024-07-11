@@ -53,8 +53,8 @@ def write_count_to_file(directory, output_file, progress_var, progress_label_var
         f.write(f"Fecha de creación: {now}\n\n")
         f.write(f'Orden OP: {op_selected}\n')
         f.write(f'Total number of folders = {folder_count}\n')
-        f.write(f'Total number of files = {file_count}\n')
-        f.write(f'Total number of sheets (pages in PDF files) = {total_sheets}\n')
+        f.write(f'Total number of files = {file_count} Actos\n')
+        f.write(f'Total number of sheets (pages in PDF files) = {total_sheets} hojas\n')
         if include_filenames:
             f.write('\nFile names:\n')
             for name in file_names:
