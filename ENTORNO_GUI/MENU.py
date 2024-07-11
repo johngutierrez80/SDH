@@ -40,8 +40,7 @@ class CustomTitleBar(tk.Frame):
         else:
             self.master.destroy()
 
-    
-
+# Funciones para ejecutar los archivos
 def ejecutar_RENOMBRAR_ARCHIVOS_GUI():
     os.system(r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\ENTORNO_GUI\RENOMBRAR_ARCHIVOS_GUI.py")
 
@@ -115,12 +114,21 @@ def abrir_archivo():
 
 # Cargar imagen de fondo y redimensionarla para ajustarla a la ventana
 background_image = Image.open(r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\ENTORNO_GUI\Background\INC.jpg")
-background_image = background_image.resize((1200, 570), Image.LANCZOS)  # Ajustar el tamaño de la imagen al tamaño de la ventana
+background_image = background_image.resize((1200, 570), Image.LANCZOS) # Ajustar el tamaño de la imagen al tamaño de la ventana
 background_photo = ImageTk.PhotoImage(background_image)
 
 # Crear un label para la imagen de fondo y posicionarlo en la parte superior
 background_label = tk.Label(root, image=background_photo)
 background_label.place(x=0, y=30, relwidth=1, relheight=1)
+
+# Cargar una segunda imagen y redimensionarla si es necesario
+second_image = Image.open(r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\ENTORNO_GUI\Background\160.jpg")
+second_image = second_image.resize((800, 150), Image.LANCZOS)  # Ajustar el tamaño de la imagen según sea necesario
+second_photo = ImageTk.PhotoImage(second_image)
+
+# Crear un label para la segunda imagen y posicionarlo debajo del título y encima del fondo
+second_label = tk.Label(root, image=second_photo)
+second_label.place(x=screen_width//2 - 400, y=70)  # Ajustar las coordenadas según sea necesario
 
 # Crear menú principal
 menu_bar = Menu(root)
@@ -143,7 +151,7 @@ menu_bar.add_cascade(label="ADICIONALES", menu=apps_menu, font=("Arial", 12))  #
 
 # Agregar las opciones de las reportes al submenú
 apps_menu.add_command(label="RENOMBRAR SIN ORDEN SAP ID", command=ejecutar_RENOMBRAR_SAP_ID_GUI)
-apps_menu.add_command(label="RENOMBRAR CARTAS", command=ejecutar_RENOMBRAR_ACTAS_GUI)
+apps_menu.add_command(label="RENOMBRAR CARTAS ACTAS", command=ejecutar_RENOMBRAR_ACTAS_GUI)
 apps_menu.add_command(label="UNIFICAR BASES DE DATOS", command=ejecutar_UNIFICAR_BASES_DE_DATOS_GUI)
 apps_menu.add_command(label="COMPARAR ADICIONALES", command=ejecutar_ADICIONALES_GUI)
 
@@ -160,7 +168,6 @@ apps_menu.add_command(label="LS CARTAS", command=ejecutar_LS)
 # Crear submenú para los Validaciones
 apps_menu = Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="VALIDACIONES", menu=apps_menu, font=("Arial", 12))  # Ajustar el tamaño de la fuente del menú de Validaciones
-
 
 # Agregar las opciones de las Validaciones al submenú
 apps_menu.add_command(label="VERIFICA RENOMBRADOS", command=ejecutar_COMP_RENOM_GUI)

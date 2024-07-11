@@ -5,13 +5,13 @@ from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from PIL import Image, ImageTk
+import threading
 
-def count_files_folders_and_sheets(directory, progress_var, progress_label_var):
+def count_files_folders_and_sheets(directory, progress_var, progress_label_var, op_selected):
     file_count = 0
     folder_count = 0
     total_sheets = 0
     file_names = []
-    file_paths = []
 
     entries = os.listdir(directory)
     total_entries = len(entries)
@@ -21,12 +21,14 @@ def count_files_folders_and_sheets(directory, progress_var, progress_label_var):
         if os.path.isfile(path):
             file_count += 1
             file_names.append(entry)
-            file_paths.append(path)
             if path.endswith('.pdf'):
                 try:
                     pdf = fitz.open(path)
                     num_pages = pdf.page_count
-                    total_sheets += ceil(num_pages / 2)
+                    if op_selected == "307138":
+                        total_sheets += ceil(num_pages / 2) * 2
+                    else:
+                        total_sheets += ceil(num_pages / 2)
                     pdf.close()
                 except Exception as e:
                     print(f'Error al procesar el archivo PDF: {path}, Error: {e}')
@@ -38,12 +40,14 @@ def count_files_folders_and_sheets(directory, progress_var, progress_label_var):
         progress_label_var.set(f"Procesando: {i + 1}/{total_entries}")
         root.update_idletasks()
 
-    return file_count, folder_count, total_sheets, file_names, file_paths
+    return file_count, folder_count, total_sheets, file_names
 
-def write_count_to_file(directory, output_file, progress_var, progress_label_var, include_filenames, include_filepaths, op_selected):
-    file_count, folder_count, total_sheets, file_names, file_paths = count_files_folders_and_sheets(directory, progress_var, progress_label_var)
+def write_count_to_file(directory, output_file, progress_var, progress_label_var, include_filenames, op_selected):
+    file_count, folder_count, total_sheets, file_names = count_files_folders_and_sheets(directory, progress_var, progress_label_var, op_selected)
+    
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    directory_name = os.path.basename(directory)
+    directory_name = "ACTOS GG/SHD" if op_selected == "307138" else os.path.basename(directory)
+    
     with open(output_file, 'w') as f:
         f.write(f"LS - {directory_name}\n")
         f.write(f"Fecha de creación: {now}\n\n")
@@ -55,10 +59,6 @@ def write_count_to_file(directory, output_file, progress_var, progress_label_var
             f.write('\nFile names:\n')
             for name in file_names:
                 f.write(f'{name}\n')
-        if include_filepaths:
-            f.write('\nFile paths:\n')
-            for path in file_paths:
-                f.write(f'{path}\n')
 
 def select_directory():
     directory = filedialog.askdirectory()
@@ -76,7 +76,6 @@ def generate_report():
     directory = directory_entry.get()
     output_file = output_entry.get()
     include_filenames = include_filenames_var.get()
-    include_filepaths = include_filepaths_var.get()
     op_selected = op_var.get()
     
     if not directory or not os.path.exists(directory):
@@ -96,6 +95,11 @@ def generate_report():
     
     progress_window = tk.Toplevel(root)
     progress_window.title("Progreso")
+
+    # Definir tamaño y centrar ventana emergente
+    progress_window_width = 300
+    progress_window_height = 100
+    center_window(progress_window, progress_window_width, progress_window_height)
     
     progress_label = tk.Label(progress_window, textvariable=progress_label_var)
     progress_label.pack(padx=20, pady=10)
@@ -105,13 +109,14 @@ def generate_report():
     
     root.update_idletasks()
     
-    write_count_to_file(directory, output_file, progress_var, progress_label_var, include_filenames, include_filepaths, op_selected)
+    def task():
+        write_count_to_file(directory, output_file, progress_var, progress_label_var, include_filenames, op_selected)
+        progress_label_var.set("¡Completado!")
+        progress_bar['value'] = 100
+        messagebox.showinfo("Éxito", f"El archivo ha sido guardado en {output_file}.")
+        progress_window.after(2000, progress_window.destroy)
     
-    progress_label_var.set("¡Completado!")
-    progress_bar['value'] = 100
-    
-    messagebox.showinfo("Éxito", f"El archivo ha sido guardado en {output_file}.")
-    progress_window.after(2000, progress_window.destroy)
+    threading.Thread(target=task).start()
 
 def close_app():
     root.destroy()
@@ -133,7 +138,7 @@ def resize_bg_image(event):
 
 # Crear la ventana principal
 root = tk.Tk()
-root.title("Generador LS Cartas")
+root.title("File List Generator")
 icon_image = Image.open(r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\ENTORNO_GUI\Background\INC.ico")
 icon_photo = ImageTk.PhotoImage(icon_image)
 root.iconphoto(False, icon_photo) 
@@ -148,7 +153,7 @@ bg_image = Image.open(r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTAB
 bg_image_resized = bg_image.resize((window_width, window_height), Image.LANCZOS)
 bg_photo = ImageTk.PhotoImage(bg_image_resized)
 bg_label = tk.Label(root, image=bg_photo)
-bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+bg_label.place(relx=0, rely=0, relwidth=1, relheight=1)
 bg_label.bind('<Configure>', resize_bg_image)
 
 # Variables de progreso
@@ -156,39 +161,35 @@ progress_var = tk.DoubleVar()
 progress_label_var = tk.StringVar()
 
 # Crear y colocar los widgets usando place
-directory_label = tk.Label(root, text="Directorio:", bg="white", font=("Arial", 10, "bold"))
-directory_label.place(x=20, y=20)
-directory_entry = tk.Entry(root, width=50)
-directory_entry.place(x=180, y=20)
-directory_button = tk.Button(root, text="Buscar", command=select_directory, font=("Arial", 10, "bold"))
-directory_button.place(x=500, y=18)
+directory_label = tk.Label(root, text="Directory:", bg="white", font=("Arial", 10, "bold"))
+directory_label.place(relx=0.2, rely=0.05)
+directory_entry = tk.Entry(root, width=31)
+directory_entry.place(relx=0.35, rely=0.05)
+directory_button = tk.Button(root, text="Browse", command=select_directory, font=("Arial", 10, "bold"))
+directory_button.place(relx=0.77, rely=0.05, width=88)
 
-output_label = tk.Label(root, text="Archivo de salida:", bg="white", font=("Arial", 10, "bold"))
-output_label.place(x=20, y=60)
-output_entry = tk.Entry(root, width=50)
-output_entry.place(x=180, y=60)
-output_button = tk.Button(root, text="Buscar", command=select_output_file, font=("Arial", 10, "bold"))
-output_button.place(x=500, y=58)
+output_label = tk.Label(root, text="Output:", bg="white", font=("Arial", 10, "bold"))
+output_label.place(relx=0.2, rely=0.15)
+output_entry = tk.Entry(root, width=31)
+output_entry.place(relx=0.35, rely=0.15)
+output_button = tk.Button(root, text="Browse", command=select_output_file, font=("Arial", 10, "bold"))
+output_button.place(relx=0.77, rely=0.15, width=88)
 
-op_label = tk.Label(root, text="Orden OP:", bg="white", font=("Arial", 10, "bold"))
-op_label.place(x=20, y=100)
+op_label = tk.Label(root, text="Order OP:", bg="white", font=("Arial", 10, "bold"))
+op_label.place(relx=0.2, rely=0.3)
 op_var = tk.StringVar()
 op_combobox = ttk.Combobox(root, textvariable=op_var, values=["307137", "307138"], font=("Arial", 10, "bold"))
-op_combobox.place(x=180, y=100)
+op_combobox.place(relx=0.365, rely=0.3109, width=108)
 
 include_filenames_var = tk.BooleanVar()
-include_filenames_checkbutton = tk.Checkbutton(root, text="Nombres de archivos", variable=include_filenames_var, bg="white", font=("Arial", 10, "bold"))
-include_filenames_checkbutton.place(x=20, y=140)
+include_filenames_checkbutton = tk.Checkbutton(root, text="Files", variable=include_filenames_var, bg="white", font=("Arial", 10, "bold"))
+include_filenames_checkbutton.place(relx=0.2, rely=0.4)
 
-include_filepaths_var = tk.BooleanVar()
-include_filepaths_checkbutton = tk.Checkbutton(root, text="Paths de archivos", variable=include_filepaths_var, bg="white", font=("Arial", 10, "bold"))
-include_filepaths_checkbutton.place(x=200, y=140)
+generate_button = tk.Button(root, text="Run", command=generate_report, bg="green", font=("Arial", 10, "bold"), width=8, height=2)
+generate_button.place(relx=0.54, rely=0.78)
 
-generate_button = tk.Button(root, text="Run", command=generate_report, bg="green", font=("Arial", 10, "bold"), width=10, height=2)
-generate_button.place(x=200, y=250)
-
-close_button = tk.Button(root, text="Exit", command=close_app, bg="red", fg="white", font=("Arial", 10, "bold"), width=10, height=2)
-close_button.place(x=400, y=250)
+close_button = tk.Button(root, text="Exit", command=close_app, bg="red", fg="white", font=("Arial", 10, "bold"), width=8, height=2)
+close_button.place(relx=0.79, rely=0.78)
 
 # Iniciar el bucle principal
 root.mainloop()
