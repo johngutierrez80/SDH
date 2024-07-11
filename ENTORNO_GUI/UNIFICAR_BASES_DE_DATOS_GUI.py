@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox
 from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 
@@ -72,9 +72,13 @@ def unificar_archivos():
         # Concatena todos los DataFrames en uno solo
         datos_combinados = pd.concat(datos, ignore_index=True)
 
+        # Asignar el nombre de la primera columna a "Numero de secuencia"
+        datos_combinados.columns = ["Numero de secuencia "] + list(datos_combinados.columns[1:])
+
         # Guarda el DataFrame combinado en un nuevo archivo Excel
         try:
-            datos_combinados.to_excel(ruta_salida, index=False)
+            with pd.ExcelWriter(ruta_salida) as writer:
+                datos_combinados.to_excel(writer, sheet_name='Hoja1', index=False)
             # Imprime los resultados
             mensaje_resultados = (
                 f'\nTotal de registros individuales: {total_registros_individuales}\n'
