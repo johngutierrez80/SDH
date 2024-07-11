@@ -97,8 +97,8 @@ def generate_report():
     progress_window.title("Progreso")
 
     # Definir tamaño y centrar ventana emergente
-    progress_window_width = 300
-    progress_window_height = 100
+    progress_window_width = 200
+    progress_window_height = 80
     center_window(progress_window, progress_window_width, progress_window_height)
     
     progress_label = tk.Label(progress_window, textvariable=progress_label_var)
