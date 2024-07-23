@@ -50,7 +50,7 @@ def write_count_to_file(directory, output_file, progress_var, progress_label_var
     
     with open(output_file, 'w') as f:
         f.write(f"LS - {directory_name}\n")
-        f.write(f"Fecha de creación: {now}\n\n")
+        f.write(f"Fecha de creacion: {now}\n\n")
         f.write(f'Orden OP: {op_selected}\n')
         f.write(f'Total number of folders = {folder_count}\n')
         f.write(f'Total number of files = {file_count} Archivos\n')
