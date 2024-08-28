@@ -5,7 +5,7 @@ from openpyxl.utils import get_column_letter
 import fitz  # Importar PyMuPDF
 from math import ceil  # Importar la función ceil para redondear hacia arriba
 
-ubicacion_carpeta = r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\ACTAS_2024\240606 ACTA # 29\ACTA 29 IMPRESION"
+ubicacion_carpeta = r"\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\Actos GG_ Diarios_SHD_2024\240729-DIB+DCO-GG-lote 1\RENOMBRADOS"
 
 if not os.path.exists(ubicacion_carpeta):
     print(f"El directorio {ubicacion_carpeta} no existe.")

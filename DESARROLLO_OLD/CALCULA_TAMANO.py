@@ -5,7 +5,7 @@ import PyPDF4
 import decimal
 
 
-ruta_archivo = r'\\FJCALDAS\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\tamanoarchivos24_04.xlsx'
+ruta_archivo = r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\DESARROLLO_OLD\tamanoarchivos24_04.xlsx'
 
 # Abre el archivo de Excel
 wb = openpyxl.load_workbook(ruta_archivo)
@@ -50,7 +50,7 @@ for row in sheet.iter_rows(min_row=2, values_only=True):
         row_counter += 1
 
 # Guarda los cambios en el archivo de Excel
-wb.save(r'\\FJCALDAS\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\tamanoarchivos24_04.xlsx')
+wb.save(r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\EJECUTABLES_PROCESOS_OK\DESARROLLO_OLD\tamanoarchivos24_04.xlsx')
 print('Archivo terminado.')
 
 

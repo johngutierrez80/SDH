@@ -2,8 +2,8 @@ import os
 import pandas as pd
 
 # Configuración de las rutas
-excel_file_path = r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\ACTAS_2024\240621 ACTA # 34\NUEVOS ARCHIVOS\BASE ACTA 34 PDFS FINAL.xlsx'
-pdf_directory_path = r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\ACTAS_2024\240621 ACTA # 34\ACTA 34 FINAL'
+excel_file_path = r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\ACTAS_2024\240805 ACTA # 44\nombres.xlsx'
+pdf_directory_path = r'C:\Users\jgutierrezr\Desktop\ACTA 44\ACTA 44'
 
 # Leer el archivo Excel
 df = pd.read_excel(excel_file_path)
@@ -15,7 +15,7 @@ if '# COMUNICACIÓN' not in df.columns or 'LLAVE' not in df.columns:
 
 # Obtener las listas de nombres actuales y nuevos nombres
 current_names = df['# COMUNICACIÓN'].astype(str).tolist()
-new_names = df['LLAVE'].astype(str).tolist()
+new_names = df['nombres'].astype(str).tolist()
 
 # Renombrar los archivos en el directorio
 for current_name, new_name in zip(current_names, new_names):
