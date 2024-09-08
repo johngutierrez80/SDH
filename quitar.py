@@ -2,8 +2,8 @@ import os
 import pandas as pd
 
 # Configuración de las rutas
-excel_file_path = r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\ACTAS_2024\240805 ACTA # 44\nombres.xlsx'
-pdf_directory_path = r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\ACTAS_2024\240805 ACTA # 44\NUEVAS MUESTRAS ACTA 44'
+excel_file_path = r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\ACTAS_2024\240903ACTA # 55\BASE NOMBRES.xlsx'
+pdf_directory_path = r'\\fjcaldas\SDH-Secretaria_Distrital_de_Hacienda\ACTAS_2024\240903ACTA # 55\MUESTRAS ACTA 55'
 
 # Leer el archivo Excel
 df = pd.read_excel(excel_file_path)
@@ -17,7 +17,7 @@ if 'nombre' not in df.columns:
 new_names = df['nombre'].astype(str).tolist()
 
 # Listar todos los archivos en el directorio que sigan el formato especificado
-pdf_files = sorted([f for f in os.listdir(pdf_directory_path) if f.endswith('.pdf') and '__ACTA44__' in f])
+pdf_files = sorted([f for f in os.listdir(pdf_directory_path) if f.endswith('.pdf') and '__ACTA_55__' in f])
 
 # Renombrar los archivos en el directorio
 if len(pdf_files) != len(new_names):
